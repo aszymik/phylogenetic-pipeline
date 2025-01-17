@@ -2,6 +2,9 @@
 *__pycache/
 *.DS_Store
 
+# Virtual environments
+env/
+
 # Custom
 old_species.txt
 sequences/
