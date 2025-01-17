@@ -1,0 +1,7 @@
+# Cache
+*__pycache/
+*.DS_Store
+
+# Custom
+old_species.txt
+sequences/
