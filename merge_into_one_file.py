@@ -11,6 +11,6 @@ with open(output_file, 'w') as outfile:
                 for line in infile:
                     if line.startswith('>'):
                         # Add species name to header
-                        outfile.write(f">{filename.strip('.fasta').replace(' ', '_')}_{line[1:]}")
+                        outfile.write(f">{filename.strip('.fasta').replace(' ', '_')}:{line[1:]}")
                     else:
                         outfile.write(line)

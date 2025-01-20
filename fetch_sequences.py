@@ -1,6 +1,5 @@
 from Bio import Entrez, SeqIO
 import ssl
-import os
 
 Entrez.email = 'email@example.com'
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -10,7 +9,7 @@ no_proteome = []
 
 def get_protein_sequences(species_name):
     try:
-        # Step 1: Search for the complete genome
+        # Search for the species genome
         search_term = f'{species_name} complete genome'
         handle = Entrez.esearch(db='nucleotide', term=search_term, retmax=1)
         search_results = Entrez.read(handle)
@@ -24,12 +23,12 @@ def get_protein_sequences(species_name):
         genome_id = search_results['IdList'][0]
         print(f'Found genome ID: {genome_id}')
         
-        # Step 2: Fetch the GenBank record
+        # Fetch the genbank record
         handle = Entrez.efetch(db='nucleotide', id=genome_id, rettype='gb', retmode='text')
         record = SeqIO.read(handle, 'genbank')
         handle.close()
         
-        # Step 3: Extract protein ids and sequences
+        # Extract protein ids and sequences
         proteins = {}
         for feature in record.features:
             if feature.type == 'CDS' and 'translation' in feature.qualifiers:
@@ -45,17 +44,19 @@ def get_protein_sequences(species_name):
         return None
 
 
+species_file_path = 'input_data/species_ids.txt'
+output_dir = 'sequences'
 
-with open('species_ids.txt') as species_file: 
+with open(species_file_path) as species_file: 
     species_names = [name.strip() for name in species_file.readlines()]   
 
 
 for species_name in species_names:
     protein_sequences = get_protein_sequences(species_name)
 
-    # Save to a FASTA file (optional)
+    # Save to a fasta file
     if protein_sequences:
-        with open(f'sequences/{species_name}.fasta', 'w') as fasta_file:
+        with open(f'{output_dir}/{species_name}.fasta', 'w') as fasta_file:
             for protein_id, sequence in protein_sequences.items():
                 fasta_file.write(f'>{protein_id}\n{sequence}\n')
         print(f'Protein sequences saved to {species_name}.fasta')
