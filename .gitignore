@@ -6,7 +6,9 @@
 env/
 
 # Custom
-old_species.txt
 sequences/
+clustering/
+blast_tmp/
+blast/
+blast.sh
 pipeline.txt
-odrzucone.txt
