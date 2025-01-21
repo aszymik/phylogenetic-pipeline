@@ -1,8 +1,8 @@
 library(phangorn)
 
 # Set directories
-alignment_dir <- "multi_alignments"
-output_dir <- "nj_trees"
+alignment_dir <- "msa"
+output_dir <- "trees"
 
 # Function to read alignment, compute distance matrix, and construct NJ tree
 run_nj_tree <- function(file_path, output_path) {

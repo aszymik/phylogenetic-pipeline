@@ -9,6 +9,6 @@ env/
 sequences/
 clustering/
 blast_tmp/
-blast/
+msa/
 blast.sh
 pipeline.txt
