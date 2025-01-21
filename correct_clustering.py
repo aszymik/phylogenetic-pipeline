@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+
 import os
 import subprocess
 from Bio import SeqIO
 from collections import defaultdict
 from functools import lru_cache
+import argparse
 
 
 def parse_header(header):
@@ -15,7 +18,7 @@ def parse_header(header):
     Returns:
         tuple: Species and protein ID.
     """
-    species, protein = header.split(":")
+    species, protein = header.split(':')
     return species.strip(), protein.strip()
 
 
@@ -67,7 +70,7 @@ def get_protein_sequence(input_seq_dir, species, protein_tuple):
     sequences = {}
     input_fasta = f'{input_seq_dir}/{species}.faa'
     with open(input_fasta, 'r') as fasta_file:
-        for record in SeqIO.parse(fasta_file, "fasta"):
+        for record in SeqIO.parse(fasta_file, 'fasta'):
             protein_id = record.id.split()[0]  # Extract the first token before the whitespace
             if protein_id in protein_tuple:
                 sequences[protein_id] = str(record.seq)
@@ -87,39 +90,39 @@ def get_best_protein(input_seq_dir, species, proteins_to_choose, rest_of_cluster
     Returns:
         str: The protein ID with the best BLASTP score.
     """
-    tmp_dir = "blast_tmp"
+    tmp_dir = 'blast_tmp'
     os.makedirs(tmp_dir, exist_ok=True)
 
     # Prepare input files for BLAST
     proteins_seq = get_protein_sequence(input_seq_dir, species, tuple(proteins_to_choose))
-    proteins_fasta = os.path.join(tmp_dir, "proteins_to_choose.fasta")
+    proteins_fasta = os.path.join(tmp_dir, 'proteins_to_choose.fasta')
     with open(proteins_fasta, 'w') as f:
         for protein_id, seq in zip(proteins_to_choose, proteins_seq):
-            f.write(f">{protein_id}\n{seq}\n")
+            f.write(f'>{protein_id}\n{seq}\n')
 
     rest_cluster_seq = []
     for other_species, protein_list in rest_of_cluster.items():
         rest_cluster_seq.extend(get_protein_sequence(input_seq_dir, other_species, tuple(protein_list)))
-    rest_fasta = os.path.join(tmp_dir, "rest_of_cluster.fasta")
+    rest_fasta = os.path.join(tmp_dir, 'rest_of_cluster.fasta')
     with open(rest_fasta, 'w') as f:
         for i, seq in enumerate(rest_cluster_seq):
-            f.write(f">seq{i}\n{seq}\n")
+            f.write(f'>seq{i}\n{seq}\n')
 
     # Perform BLASTP
-    blast_output = os.path.join(tmp_dir, "blast_results.txt")
+    blast_output = os.path.join(tmp_dir, 'blast_results.txt')
     subprocess.run([
-        "blastp",
-        "-query", proteins_fasta,
-        "-subject", rest_fasta,
-        "-out", blast_output,
-        "-outfmt", "6 qseqid bitscore"
+        'blastp',
+        '-query', proteins_fasta,
+        '-subject', rest_fasta,
+        '-out', blast_output,
+        '-outfmt', '6 qseqid bitscore'
     ])
 
     # Parse BLAST results
     scores = defaultdict(float)
     with open(blast_output, 'r') as f:
         for line in f:
-            query_id, bitscore = line.strip().split("\t")
+            query_id, bitscore = line.strip().split('\t')
             scores[query_id] += float(bitscore)
 
     # Return the protein with the highest total score
@@ -146,7 +149,7 @@ def filter_by_cluster_size(clustering, min_cluster_size):
     return {cluster_id: cluster for cluster_id, cluster in clustering.items() if len(cluster) >= min_cluster_size}
 
 
-def process_clusters(cluster_tsv, input_seq_dir, output_dir, min_cluster_size=15, remove_paralogs=True):
+def process_clusters(input_seq_dir, output_dir, cluster_tsv, min_cluster_size=15, remove_paralogs=True):
     """
     Processes clusters, optionally removing paralogs and saving each cluster to a separate file.
 
@@ -175,21 +178,22 @@ def process_clusters(cluster_tsv, input_seq_dir, output_dir, min_cluster_size=15
                     cluster[species] = [chosen_protein]
 
         # Save the cluster to a separate file
-        output_file = os.path.join(output_dir, f"{cluster_id}.fasta")
+        output_file = os.path.join(output_dir, f'{cluster_id}.fasta')
 
         with open(output_file, 'w') as out_fasta:
             for species, protein_list in cluster.items():
                 sequences = get_protein_sequence(input_seq_dir, species, tuple(protein_list))
                 for seq_id, seq in zip(protein_list, sequences):
-                    out_fasta.write(f">{seq_id}\n{seq}\n")
+                    out_fasta.write(f'>{seq_id}\n{seq}\n')
 
 
 if __name__ == '__main__':
-    input_seq_dir = 'sequences'
-    input_fasta = "clustering/proteomes.fasta"
-    mmseq_output_dir = "clustering/mmseqs_results"
-    cluster_dir = "clustering/clusters"
-    cluster_tsv = f'{mmseq_output_dir}/mmseqs_cluster.tsv'
+    parser = argparse.ArgumentParser(description='Process and correct clustering results from MMseqs2.')
+    parser.add_argument('--input_seq_dir', required=True, help='Directory containing input sequence files.')
+    parser.add_argument('--output_dir', required=True, help='Directory to save processed cluster files.')
+    parser.add_argument('--cluster_tsv', required=True, help='Path to the MMseqs2 clustering output TSV file.')
+    parser.add_argument('--min_cluster_size', type=int, default=15, help='Minimum size of clusters to retain.')
+    parser.add_argument('--remove_paralogs', type=bool, default=True, help='Whether to remove paralogs within clusters.')
+    args = parser.parse_args()
 
-    process_clusters(cluster_tsv, input_seq_dir, cluster_dir, remove_paralogs=True)
-
+    process_clusters(args.input_seq_dir, args.output_dir, args.cluster_tsv, args.min_cluster_size, args.remove_paralogs)
