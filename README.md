@@ -56,7 +56,9 @@ cd fasturec || exit
 make
 ```
 
-All the Python packages required are listed in `requirements.txt` and can be installed using `pip install -r requirements.txt`.
+All Python packages that have to be installed with `conda` are listed in `conda_requirements.txt` and can be installed using `conda create -n env --file package-list.txt`
+
+All other Python packages are listed in `requirements.txt` and can be installed using `pip install -r requirements.txt`.
 
 
 ## Running the pipeline
