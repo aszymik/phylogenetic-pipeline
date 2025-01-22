@@ -53,17 +53,13 @@ run_nj_with_bootstrap <- function(file_path, output_path, replicates, threshold)
     bootstrap_values <- prop.clades(nj_tree, bootstrap_trees)
     
     # Set node labels with bootstrap values
-    nj_tree$node.label <- bootstrap_values
+    nj_tree$node.label <- as.numeric(bootstrap_values)
     
-    # Filter nodes with low support
-    filtered_tree <- drop.tip(
-        nj_tree,
-        tips = nj_tree$tip.label[bootstrap_values < threshold & !is.na(bootstrap_values)],
-        trim.internal = TRUE
-    )
+    # Remove weakly supported nodes by setting their labels to NA
+    nj_tree$node.label[!is.na(nj_tree$node.label) & nj_tree$node.label < threshold] <- NA
     
     # Save the tree
-    write.tree(filtered_tree, file = output_path)
+    write.tree(nj_tree, file = output_path)
 }
 
 
