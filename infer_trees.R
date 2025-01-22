@@ -35,27 +35,37 @@ run_nj_tree <- function(file_path, output_path) {
 
 # Generate NJ tree with bootstrapping
 run_nj_with_bootstrap <- function(file_path, output_path, replicates, threshold) {
+    # Load alignment data
     phy_data <- read.phyDat(file_path, format = "fasta", type = "AA")
     dist_matrix <- dist.ml(phy_data, model = "JTT")
-
+    
     # Generate initial NJ tree
     nj_tree <- NJ(dist_matrix)
-
+    
     # Perform bootstrap analysis
-    bootstrap_trees <- bootstrap.phyDat(phy_data, FUN = function(x) NJ(dist.ml(x, model = "JTT")), bs = replicates)
-
-    # Calculate bootstrap support for each node
+    bootstrap_trees <- bootstrap.phyDat(
+        phy_data,
+        FUN = function(x) NJ(dist.ml(x, model = "JTT")),
+        bs = replicates
+    )
+    
+    # Calculate bootstrap support values
     bootstrap_values <- prop.clades(nj_tree, bootstrap_trees)
-
-    # Add bootstrap values to the tree
-    nj_tree$node.label <- as.numeric(bootstrap_values)
-
-    # Remove weakly supported nodes
-    nj_tree$node.label[nj_tree$node.label < threshold] <- NA  # Remove weakly supported nodes
-
+    
+    # Set node labels with bootstrap values
+    nj_tree$node.label <- bootstrap_values
+    
+    # Filter nodes with low support
+    filtered_tree <- drop.tip(
+        nj_tree,
+        tips = nj_tree$tip.label[bootstrap_values < threshold & !is.na(bootstrap_values)],
+        trim.internal = TRUE
+    )
+    
     # Save the tree
-    write.tree(nj_tree, file = output_path)
+    write.tree(filtered_tree, file = output_path)
 }
+
 
 # Process all alignment files
 alignment_files <- list.files(alignment_dir, full.names=TRUE, pattern="\\.fasta$")
