@@ -1,10 +1,14 @@
+list.of.packages <- c('TreeDist', 'ape', 'argparse')
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,'Package'])]
+if(length(new.packages)) install.packages(new.packages)
+
 library('TreeDist')
 library('ape')
 library('argparse')
 
 parser <- ArgumentParser(description="Compare trees using shared and unique phylogenetic information.")
 parser$add_argument("--input_tree", required=TRUE, help="File path to tree you want to compare with the reference.")
-parser$add_argument("--reference_tree", help="File path with the reference tree.")
+parser$add_argument("--reference_tree", default="reference_data/timetree.nwk", help="File path with the reference tree. Default: reference_data/timetree.nwk")
 args <- parser$parse_args()
 
 tree <- args$input_tree
