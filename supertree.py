@@ -12,6 +12,8 @@ def clean_newick(input_file, output_file):
         for line in infile:
             # Remove negative branch lengths (e.g., '-0.009203788108' -> '0.0')
             cleaned_line = re.sub(r'-\d+(\.\d+)?', '0.0', line)
+            if not cleaned_line.strip().endswith(';'):
+                cleaned_line = cleaned_line.strip() + ';\n'
             outfile.write(cleaned_line)
     print(f"Cleaned Newick file saved to: {output_file}")
 
@@ -36,7 +38,7 @@ def run_fasturec(fasturec_path, input_file):
 def main():
     parser = argparse.ArgumentParser(description='Concatenate tree files and generate a supertree using Fasturec program.')
     parser.add_argument('--trees_file', type=str, required=True, help='File containing tree files to concatenate.')
-    parser.add_argument('--fasturec_path', type=str, default='fasturec', help='Path to the Fasturec executable. Default: fasturec.')
+    parser.add_argument('--fasturec_path', type=str, default='fasturec/fasturec', help='Path to the Fasturec executable. Default: fasturec/fasturec.')
     parser.add_argument('--extension', type=str, default='.nwk', help='File extension of tree files to concatenate. Default: .nwk')
     args = parser.parse_args()
 

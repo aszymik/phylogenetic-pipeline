@@ -59,4 +59,4 @@ if __name__ == '__main__':
     # Generate consensus using two methods
     generate_consensus(all_trees_file, greedy_consensus_prefix)
     generate_consensus(all_trees_file, majority_consensus_prefix, majority=True)
-
+    

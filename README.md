@@ -92,7 +92,7 @@ Below is a summary of each script and its function in the workflow – although 
 Fetches protein sequences from a given BioProject (NCBI) using Biopython’s Entrez module.
 Downloads .faa files (protein FASTA) for each assembly in the BioProject.
 
-Usage Example:
+Usage example:
 
 ```
 python fetch_sequences.py \
@@ -105,7 +105,7 @@ python fetch_sequences.py \
 Merges all .faa files in a directory into a single FASTA file (by default, `proteomes.fasta`).
 Reformats headers to include species name.
 
-Usage Example:
+Usage example:
 
 ```
 python merge_into_one_file.py \
@@ -118,7 +118,7 @@ python merge_into_one_file.py \
 Runs MMseqs2 (easy-linclust) on the merged FASTA file.
 Outputs the clustering results in a specified directory.
 
-Usage Example:
+Usage example:
 
 ```
 bash clustering.sh clustering/proteomes.fasta clustering/mmseqs_results
@@ -131,7 +131,7 @@ Removes paralogs by selecting the best protein via BLASTP-based scoring against 
 Filters clusters by minimum cluster size.
 Writes each cluster’s final set of protein sequences into separate FASTA files.
 
-Usage Example:
+Usage example:
 
 ```
 python correct_clustering.py \
@@ -146,7 +146,7 @@ python correct_clustering.py \
 
 Aligns sequences within clusters using MAFFT. Outputs aligned FASTA files for each cluster.
 
-Usage Example:
+Usage example:
 ```
 python alignments.py \
     --input_dir clustering/clusters \
@@ -157,7 +157,7 @@ python alignments.py \
 
 Infers phylogenetic trees using the alignments as input. Utilizes Phangorn to construct neighbor-joining trees.
 
-Usage Example:
+Usage example:
 ```
 Rscript infer_trees.R \
     --alignment_dir msa \
@@ -168,7 +168,7 @@ Rscript infer_trees.R \
 
 Generates greedy and majority consensus trees for the inferred trees using IQ-TREE.
 
-Usage Example:
+Usage example:
 ```
 python consensus_tree.py \
     --trees_dir trees \
@@ -178,7 +178,7 @@ python consensus_tree.py \
 8. `supertree.py`
 Generates supertrees from the consensus trees using Fasturec. Outputs a single supertree for all families.
 
-Usage Example:
+Usage example:
 ```
 python supertree.py \
     --trees_file consensus/all_trees.treefile
