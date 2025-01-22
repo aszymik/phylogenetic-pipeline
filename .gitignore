@@ -11,7 +11,9 @@ sequences/
 clustering/
 blast_tmp/
 msa/
+msa_paralogs/
 trees/
+trees_paralogs/
 trees_bootstrap/
 */greedy_consensus.log
 */majority_consensus.log

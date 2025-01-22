@@ -11,7 +11,7 @@ consensus_dir = 'consensus'
 bootstrap_trees_dir = 'trees_bootstrap'
 bootstrap_consensus_dir = 'consensus_bootstrap'
 
-clusters_paralogs_dir = 'clustering/clusters_with_paralogs'
+clusters_paralogs_dir = 'clustering/clusters_paralogs'
 paralogs_alignment_dir = 'msa_paralogs'
 paralogs_trees_dir = 'trees_paralogs'
 paralogs_consensus_dir = 'consensus_paralogs'
