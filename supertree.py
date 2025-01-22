@@ -20,7 +20,7 @@ def clean_newick(input_file, output_file):
 
 def run_fasturec(fasturec_path, input_file):
     """
-    Runs Fasturec with the specified input file and the -Z option.
+    Runs Fasturec with the specified input file and the -Z and -c1 options.
 
     Args:
         fasturec_path (str): Path to the Fasturec executable.
@@ -30,7 +30,7 @@ def run_fasturec(fasturec_path, input_file):
         None
     """
     try:
-        subprocess.run([fasturec_path, '-G', input_file, '-Z'], check=True)
+        subprocess.run([fasturec_path, '-G', input_file, '-Z', '-c1'], check=True)
         print(f'Fasturec successfully ran on {input_file}.')
     except subprocess.CalledProcessError as e:
         print(f'Error while running Fasturec: {e}')
