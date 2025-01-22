@@ -10,5 +10,8 @@ sequences/
 clustering/
 blast_tmp/
 msa/
+trees/
 blast.sh
 pipeline.txt
+.RData
+.Rhistory

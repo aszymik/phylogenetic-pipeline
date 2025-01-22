@@ -1,11 +1,14 @@
 # Input/output files and directories
 
-bioproject_id = "PRJNA736147"
-sequences_dir = "sequences"
-proteomes_fasta = "clustering/proteomes.fasta"
-mmseqs_results_dir = "clustering/mmseqs_results"
-clusters_dir = "clustering/clusters"
-mmseqs_cluster_tsv = f"{mmseqs_results_dir}/mmseqs_cluster.tsv"
+bioproject_id = 'PRJNA736147'
+sequences_dir = 'sequences'
+proteomes_fasta = 'clustering/proteomes.fasta'
+mmseqs_results_dir = 'clustering/mmseqs_results'
+clusters_dir = 'clustering/clusters'
+mmseqs_cluster_tsv = f'{mmseqs_results_dir}/mmseqs_cluster.tsv'
+alignment_dir = 'msa'
+trees_dir = 'trees'
+consensus_dir = 'consensus'
 
 rule fetch_sequences:
     output:
@@ -13,7 +16,7 @@ rule fetch_sequences:
     params:
         bioproject_id=bioproject_id
     script:
-        "fetch_sequences.py"
+        'fetch_sequences.py'
 
 rule merge_into_one_file:
     input:
@@ -21,7 +24,7 @@ rule merge_into_one_file:
     output:
         fasta=proteomes_fasta
     script:
-        "merge_into_one_file.py"
+        'merge_into_one_file.py'
 
 rule run_clustering:
     input:
@@ -40,6 +43,25 @@ rule correct_clustering:
     output:
         directory=clusters_dir
     script:
-        "correct_clustering.py"
+        'correct_clustering.py'
 
+rule run_alignment:
+    input:
+        directory=clusters_dir
+    output:
+        directory=alignment_dir
+    script:
+        'alignments.py'
+
+rule infer_trees:
+    input:
+        directory=alignment_dir
+    output:
+        directory=trees_dir
+    shell:
+        """
+        Rscript infer_trees.R \
+            --alignment_dir {input.directory} \
+            --output_dir {output.directory}
+        """
 

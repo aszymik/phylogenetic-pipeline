@@ -35,7 +35,7 @@ def parse_mmseqs_outputs(file_path):
     cluster_helper = {}
     with open(file_path, 'r') as file:
         for line in file:
-            leader, seq_id = line.strip().split()  # First sequence in cluster is cluster ID
+            leader, seq_id = line.strip().split()  # first sequence in cluster is cluster id
             cluster_helper[leader] = cluster_helper.get(leader, [])
             cluster_helper[leader].append(seq_id)
 
@@ -71,7 +71,7 @@ def get_protein_sequence(input_seq_dir, species, protein_tuple):
     input_fasta = f'{input_seq_dir}/{species}.faa'
     with open(input_fasta, 'r') as fasta_file:
         for record in SeqIO.parse(fasta_file, 'fasta'):
-            protein_id = record.id.split()[0]  # Extract the first token before the whitespace
+            protein_id = record.id.split()[0]  # extract the first token before the whitespace
             if protein_id in protein_tuple:
                 sequences[protein_id] = str(record.seq)
 
@@ -149,7 +149,7 @@ def filter_by_cluster_size(clustering, min_cluster_size):
     return {cluster_id: cluster for cluster_id, cluster in clustering.items() if len(cluster) >= min_cluster_size}
 
 
-def process_clusters(input_seq_dir, output_dir, cluster_tsv, min_cluster_size=15, remove_paralogs=True):
+def process_clusters(input_seq_dir, cluster_tsv, output_dir, min_cluster_size=15, remove_paralogs=True):
     """
     Processes clusters, optionally removing paralogs and saving each cluster to a separate file.
 
@@ -160,7 +160,7 @@ def process_clusters(input_seq_dir, output_dir, cluster_tsv, min_cluster_size=15
         min_cluster_size (int): Minimum size of clusters to retain.
         remove_paralogs (bool): Whether to remove paralogs within clusters.
     """
-    os.makedirs(output_dir, exist_ok=True)  # Create output directory if not exists
+    os.makedirs(output_dir, exist_ok=True)  # create output directory if not exists
 
     clusters = parse_mmseqs_outputs(cluster_tsv)
     clusters = filter_by_cluster_size(clusters, min_cluster_size)
@@ -183,8 +183,8 @@ def process_clusters(input_seq_dir, output_dir, cluster_tsv, min_cluster_size=15
         with open(output_file, 'w') as out_fasta:
             for species, protein_list in cluster.items():
                 sequences = get_protein_sequence(input_seq_dir, species, tuple(protein_list))
-                for seq_id, seq in zip(protein_list, sequences):
-                    out_fasta.write(f'>{seq_id}\n{seq}\n')
+                for seq in sequences:
+                    out_fasta.write(f'>{species}\n{seq}\n')
 
 
 if __name__ == '__main__':
@@ -196,4 +196,4 @@ if __name__ == '__main__':
     parser.add_argument('--remove_paralogs', type=bool, default=True, help='Whether to remove paralogs within clusters.')
     args = parser.parse_args()
 
-    process_clusters(args.input_seq_dir, args.output_dir, args.cluster_tsv, args.min_cluster_size, args.remove_paralogs)
+    process_clusters(args.input_seq_dir, args.cluster_tsv, args.output_dir, args.min_cluster_size, args.remove_paralogs)

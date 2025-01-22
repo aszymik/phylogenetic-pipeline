@@ -1,38 +1,8 @@
+#!/usr/bin/env python3
+
 import os
 import subprocess
-import re
-
-
-def run_iqtree(input_dir, filename, output_dir, model='MFP', num_bootstraps=1):
-    """
-    Runs IQ-TREE with ultrafast bootstrap (ufboot).
-    """
-    try:
-        command = [
-            'iqtree',
-            '-s', f'{input_dir}/{filename}',
-            '-m', model,
-            '-b', str(num_bootstraps),  # Ultrafast bootstrap
-            '-pre', f'{output_dir}/{filename.strip(".fasta")}',
-            '-quiet'
-        ]
-        subprocess.run(command)
-
-    except subprocess.CalledProcessError as e:
-        print(f'Error running IQ-TREE: {e.stderr}')
-    
-    clean_iqtree_output(output_dir)
-
-
-def clean_iqtree_output(directory):
-    """
-    Deletes all files in directory except the ones with .treefile extension.
-    """
-    command = f'find {directory} -type f ! -name *.treefile -delete'
-    try:
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f'Error while cleaning up IQ-TREE files: {e}')
+import argparse
 
 
 def copy_files_to_one(directory, output_file):
@@ -53,21 +23,6 @@ def copy_files_to_one(directory, output_file):
         print(f'Error while copying to file {output_file}: {e}')
 
 
-def modify_treefile_labels(input_file, output_file):
-    """
-    Modifies treefile labels by shortening the names to the first four letters.
-    """
-    try:
-        with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-            for line in infile:
-                modified_line = re.sub(r'(\b\w+?)(:)', lambda m: m.group(1)[:4] + m.group(2), line)
-                outfile.write(modified_line)
-        
-        print(f'Modified treefile has been saved to {output_file}.')
-    except Exception as e:
-        print(f'An error occurred: {e}')
-
-
 def generate_consensus(all_trees_file, consensus_tree_prefix, majority=False):
     """
     Generates a consensus tree from trees in all_trees_file.
@@ -82,38 +37,29 @@ def generate_consensus(all_trees_file, consensus_tree_prefix, majority=False):
         print(f'Error while generating consensus: {e}')
 
 
-def generate_super_tree(input_file, output_file):
-    """
-    Generates a supertree by combining input trees and creating a consensus.
-    """
-    try:
-        subprocess.run(['iqtree', '-stree', input_file, '-pre', output_file])
-    except Exception as e:
-        print(f'Error while generating supertree: {e}')
-
 
 if __name__ == '__main__':
 
-    input_dir = 'genolevures_uniquefamilies'
-    alignment_dir = 'alignments'
+    # parser = argparse.ArgumentParser(description='Generate consenus using greedy consensus and majority consensus from all trees in the given directory.')
+    # parser.add_argument('--trees_dir', required=True, help='Directory containing input tree files.')
+    # parser.add_argument('--output_dir', required=True, help='Directory to save generated consensus trees.')
+    # args = parser.parse_args()
+
+    # trees_dir, consensus_dir = args.trees_dir, args.output_dir
     trees_dir = 'trees'
-    all_trees_file = 'all_trees.treefile'
-    all_trees_preprocessed_file = 'all_trees_preprocessed.treefile'
-    greedy_consensus_prefix = 'greedy_consensus'
-    majority_consensus_prefix = 'majority_consensus'
-    supertree_prefix = 'supertree'
+    consensus_dir = 'consensus'
 
-    for file in os.listdir(input_dir):
-        with open(f'{alignment_dir}/{file}', 'w') as alignment_file:
-            subprocess.run(['mafft', f'{input_dir}/{file}'], stdout=alignment_file)
+    os.makedirs(consensus_dir, exist_ok=True) # create output directory if not exists
 
-    for file in os.listdir(alignment_dir):
-        run_iqtree(alignment_dir, file, trees_dir)
+    all_trees_file = f'{consensus_dir}/all_trees.treefile'
+    greedy_consensus_prefix = f'{consensus_dir}/greedy_consensus'
+    majority_consensus_prefix = f'{consensus_dir}/majority_consensus'
 
+    
     copy_files_to_one(trees_dir, all_trees_file)
-    modify_treefile_labels(all_trees_file, all_trees_preprocessed_file)
+    # modify_treefile_labels(all_trees_file, all_trees_preprocessed_file)
 
-    generate_consensus(all_trees_preprocessed_file, greedy_consensus_prefix)
-    generate_consensus(all_trees_preprocessed_file, majority_consensus_prefix, majority=True)
+    # Generate consensus using two methods
+    generate_consensus(all_trees_file, greedy_consensus_prefix)
+    generate_consensus(all_trees_file, majority_consensus_prefix, majority=True)
 
-    generate_super_tree(all_trees_preprocessed_file, supertree_prefix)
