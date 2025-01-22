@@ -19,5 +19,6 @@ trees_bootstrap/
 */majority_consensus.log
 blast.sh
 pipeline.txt
+fu.*
 .RData
 .Rhistory
