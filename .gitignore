@@ -2,8 +2,9 @@
 *__pycache/
 *.DS_Store
 
-# Virtual environments
+# Virtual environments and dependencies
 env/
+fasturec/
 
 # Custom
 sequences/
