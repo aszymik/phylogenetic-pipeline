@@ -2,25 +2,25 @@
 begin taxa;
 	dimensions ntax=14;
 	taxlabels
-	D_bipectinata
-	D_birchii
-	D_bunnanda
-	D_immigrans
-	D_ironensis
-	D_jambulina
-	D_kikkawai
-	D_pseudoananassae
-	D_pseudotakahashii
-	D_rubida
-	D_serrata
-	D_setifemur
-	D_sulfurigaster
-	Z_bogoriensis
+	Drosophila_bipectinata
+	Drosophila_birchii
+	Drosophila_bunnanda
+	Drosophila_immigrans
+	Drosophila_ironensis
+	Drosophila_jambulina
+	Drosophila_kikkawai
+	Drosophila_pseudoananassae
+	Drosophila_pseudotakahashii
+	Drosophila_rubida
+	Drosophila_serrata
+	Drosophila_setifemur
+	Drosophila_sulfurigaster
+	Zaprionus_bogoriensis
 ;
 end;
 
 begin trees;
-	tree tree_1 = [&R] ((((D_jambulina:1.0,(D_birchii:1.0,(D_bunnanda:1.0,D_serrata:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,D_kikkawai:1.0):1.0,((D_setifemur:1.0,(D_ironensis:1.0,(D_pseudoananassae:1.0,D_bipectinata:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,((D_rubida:1.0,(D_immigrans:1.0,D_sulfurigaster:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,Z_bogoriensis:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0):1.0,D_pseudotakahashii:1.0);
+	tree tree_1 = [&R] ((((Drosophila_jambulina:1.0,(Drosophila_birchii:1.0,(Drosophila_bunnanda:1.0,Drosophila_serrata:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,Drosophila_kikkawai:1.0):1.0,((Drosophila_setifemur:1.0,(Drosophila_ironensis:1.0,(Drosophila_pseudoananassae:1.0,Drosophila_bipectinata:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,((Drosophila_rubida:1.0,(Drosophila_immigrans:1.0,Drosophila_sulfurigaster:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0,Zaprionus_bogoriensis:1.0)[&!rotate=true]:1.0)[&!rotate=true]:1.0):1.0,Drosophila_pseudotakahashii:1.0);
 end;
 
 begin figtree;
