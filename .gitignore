@@ -12,6 +12,9 @@ clustering/
 blast_tmp/
 msa/
 trees/
+trees_bootstrap/
+consensus/greedy_consensus.log
+consensus/majority_consensus.log
 blast.sh
 pipeline.txt
 .RData

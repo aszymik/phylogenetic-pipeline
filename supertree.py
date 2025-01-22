@@ -1,29 +1,20 @@
 import os
+import re
 import argparse
 import subprocess
 
 
-def concatenate_trees(input_dir, output_file, extension):
+def clean_newick(input_file, output_file):
     """
-    Concatenates all tree files with the specified extension into one output file.
-
-    Args:
-        input_dir (str): Path to the directory containing tree files.
-        output_file (str): Path to the output concatenated file.
-        extension (str): File extension for tree files (e.g., '.tre', '.nwk').
-
-    Returns:
-        None
+    Removes invalid negative branch lengths and other parsing issues from a Newick file.
     """
-    with open(output_file, 'w') as outfile:
-        for filename in os.listdir(input_dir):
-            if filename.endswith(extension):
-                filepath = os.path.join(input_dir, filename)
-                with open(filepath, 'r') as infile:
-                    outfile.write(infile.read())
-                    outfile.write('\n')
+    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+        for line in infile:
+            # Remove negative branch lengths (e.g., '-0.009203788108' -> '0.0')
+            cleaned_line = re.sub(r'-\d+(\.\d+)?', '0.0', line)
+            outfile.write(cleaned_line)
+    print(f"Cleaned Newick file saved to: {output_file}")
 
-    print(f"Concatenated all '{extension}' files from {input_dir} into {output_file}.")
 
 def run_fasturec(fasturec_path, input_file):
     """
@@ -44,17 +35,20 @@ def run_fasturec(fasturec_path, input_file):
 
 def main():
     parser = argparse.ArgumentParser(description='Concatenate tree files and generate a supertree using Fasturec program.')
-    parser.add_argument('--input_dir', type=str, required=True, help='Directory containing tree files to concatenate.')
-    parser.add_argument('--output_file', type=str, required=True, help='Path to save the concatenated output file.')
+    parser.add_argument('--trees_file', type=str, required=True, help='File containing tree files to concatenate.')
     parser.add_argument('--fasturec_path', type=str, default='fasturec', help='Path to the Fasturec executable. Default: fasturec.')
     parser.add_argument('--extension', type=str, default='.nwk', help='File extension of tree files to concatenate. Default: .nwk')
     args = parser.parse_args()
 
-    # Concatenate tree files
-    concatenate_trees(args.input_dir, args.output_file, args.extension)
+    all_trees_file = args.trees_file
+    all_trees_file_cleaned = f'{all_trees_file}_cleaned.nwk'
+
+    # Remove negative edges from file
+    clean_newick(all_trees_file, all_trees_file_cleaned)
 
     # Run Fasturec
-    run_fasturec(args.fasturec_path, args.output_file)
+    run_fasturec(args.fasturec_path, all_trees_file_cleaned)
 
+    
 if __name__ == '__main__':
     main()

@@ -1,9 +1,9 @@
 #!/usr/bin/env Rscript
 
 # Install and load necessary packages
-install.packages("argparse")
-install.packages("phangorn")
-
+list.of.packages <- c("argparse", "phangorn")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
 library(argparse)
 library(phangorn)
 
@@ -43,14 +43,16 @@ run_nj_with_bootstrap <- function(file_path, output_path, replicates, threshold)
 
     # Perform bootstrap analysis
     bootstrap_trees <- bootstrap.phyDat(phy_data, FUN = function(x) NJ(dist.ml(x, model = "JTT")), bs = replicates)
-    bs_values <- plotBS(nj_tree, bootstrap_trees, type = "none")
 
-    # Remove branches with low bootstrap support
-    for (i in seq_along(bs_values)) {
-        if (!is.null(bs_values[i]) && bs_values[i] < threshold) {
-            nj_tree$edge.length[i] <- NA
-        }
-    }
+    # Calculate bootstrap support for each node
+    bootstrap_values <- prop.clades(nj_tree, bootstrap_trees)
+
+    # Add bootstrap values to the tree
+    nj_tree$node.label <- as.numeric(bootstrap_values)
+
+    # Remove weakly supported nodes
+    nj_tree$node.label[nj_tree$node.label < threshold] <- NA  # Remove weakly supported nodes
+
     # Save the tree
     write.tree(nj_tree, file = output_path)
 }
