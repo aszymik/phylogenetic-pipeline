@@ -1,0 +1,135 @@
+{
+    "total_runtime": 4911.420945882797,
+    "rules": {
+        "fetch_sequences": {
+            "mean-runtime": 113.5491714477539,
+            "min-runtime": 113.5491714477539,
+            "max-runtime": 113.5491714477539
+        },
+        "merge_into_one_file": {
+            "mean-runtime": 0.9467418193817139,
+            "min-runtime": 0.9467418193817139,
+            "max-runtime": 0.9467418193817139
+        },
+        "run_clustering": {
+            "mean-runtime": 89.36875319480896,
+            "min-runtime": 89.36875319480896,
+            "max-runtime": 89.36875319480896
+        },
+        "correct_clustering": {
+            "mean-runtime": 3523.2798132896423,
+            "min-runtime": 3523.2798132896423,
+            "max-runtime": 3523.2798132896423
+        },
+        "run_alignment": {
+            "mean-runtime": 1091.8175847530365,
+            "min-runtime": 1091.8175847530365,
+            "max-runtime": 1091.8175847530365
+        },
+        "infer_trees": {
+            "mean-runtime": 91.2636353969574,
+            "min-runtime": 91.2636353969574,
+            "max-runtime": 91.2636353969574
+        },
+        "consensus_tree": {
+            "mean-runtime": 1.1809163093566895,
+            "min-runtime": 1.1809163093566895,
+            "max-runtime": 1.1809163093566895
+        },
+        "all": {
+            "mean-runtime": 0.0005977153778076172,
+            "min-runtime": 0.0005977153778076172,
+            "max-runtime": 0.0005977153778076172
+        }
+    },
+    "files": {
+        "sequences": {
+            "start-time": "Tue Feb  4 17:50:11 2025",
+            "stop-time": "Tue Feb  4 17:52:05 2025",
+            "duration": 113.5491714477539,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "clustering/proteomes.fasta": {
+            "start-time": "Tue Feb  4 17:52:05 2025",
+            "stop-time": "Tue Feb  4 17:52:06 2025",
+            "duration": 0.9467418193817139,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "clustering/mmseqs_results": {
+            "start-time": "Tue Feb  4 17:52:06 2025",
+            "stop-time": "Tue Feb  4 17:53:35 2025",
+            "duration": 89.36875319480896,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "clustering/mmseqs_results/mmseqs_cluster.tsv": {
+            "start-time": "Tue Feb  4 17:52:06 2025",
+            "stop-time": "Tue Feb  4 17:53:35 2025",
+            "duration": 89.36875319480896,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "clustering/clusters": {
+            "start-time": "Tue Feb  4 17:53:35 2025",
+            "stop-time": "Tue Feb  4 18:52:18 2025",
+            "duration": 3523.2798132896423,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "msa": {
+            "start-time": "Tue Feb  4 18:52:18 2025",
+            "stop-time": "Tue Feb  4 19:10:30 2025",
+            "duration": 1091.8175847530365,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "trees": {
+            "start-time": "Tue Feb  4 19:10:30 2025",
+            "stop-time": "Tue Feb  4 19:12:02 2025",
+            "duration": 91.2636353969574,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        },
+        "consensus": {
+            "start-time": "Tue Feb  4 19:12:02 2025",
+            "stop-time": "Tue Feb  4 19:12:03 2025",
+            "duration": 1.1809163093566895,
+            "priority": 0,
+            "resources": {
+                "_cores": 1,
+                "_nodes": 1,
+                "tmpdir": "/tmp"
+            }
+        }
+    }
+}

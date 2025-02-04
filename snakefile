@@ -26,6 +26,19 @@ all_trees_file = f'{consensus_dir}/all_trees.treefile'
 bootstrap_trees_file = f'{bootstrap_consensus_dir}/all_trees.treefile'
 paralogs_trees_file = f'{paralogs_consensus_dir}/all_trees.treefile'
 
+
+rule all:
+    input:
+        sequences_dir,
+        proteomes_fasta,
+        mmseqs_results_dir,
+        mmseqs_cluster_tsv,
+        clusters_dir,
+        alignment_dir,
+        trees_dir,
+        consensus_dir,
+
+
 # Fetch protein sequences from NCBI database
 rule fetch_sequences:
     output:
@@ -49,20 +62,24 @@ rule run_clustering:
     input:
         proteomes_fasta
     output:
-        directory(mmseqs_results_dir)
+        directory(mmseqs_results_dir),
+        mmseqs_cluster_tsv
     shell:
         'bash clustering.sh {input} {output}'
 
 # Correct clustering to contain orthologs cluster
 rule correct_clustering:
     input:
-        sequences_dir
+        [sequences_dir, mmseqs_cluster_tsv]
     output:
         directory(clusters_dir)
-    params:
-        cluster_tsv=mmseqs_cluster_tsv
     shell:
-        'python3 correct_clustering.py {input} {output} {params.cluster_tsv}'
+        """
+        python3 correct_clustering.py \
+        --input_seq_dir {input[0]} \
+        --output_dir {output} \
+        --cluster_tsv {input[1]}
+        """
 
 # Run MSA
 rule run_alignment:
@@ -71,7 +88,7 @@ rule run_alignment:
     output:
         directory(alignment_dir)
     shell:
-        'python3 alignments.py {input} {output}'
+        'python3 alignments.py --input_dir {input} --output_dir {output}'
 
 # Infer NJ trees
 rule infer_trees:
@@ -93,14 +110,14 @@ rule consensus_tree:
     output:
         directory(consensus_dir)
     shell:
-        'python3 consensus_tree.py {input} {output}'
+        'python3 consensus_tree.py --trees_dir {input} --output_dir {output}'
 
 # Generate supertree
 rule supertree:
     input:
         all_trees_file
     shell:
-        'python3 supertree.py {input}'
+        'python3 supertree.py --trees_file {input}'
 
 # Infer NJ trees with bootstrap
 rule infer_bootstrap_trees:
