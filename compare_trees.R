@@ -16,11 +16,19 @@ args <- parser$parse_args()
 
 # Parse input trees
 tree <- read.tree(args$input_tree)
-reference_tree <- read.tree(args$reference_tree)
+if (inherits(tree, "multiPhylo")) tree <- tree[[1]]  # if there is a list of trees, select the first one
+print(tree)
 
-# Change labels to match
-# timetree$tip.label <- as.integer(as.factor(timetree$tip.label))
-# tree_16s$tip.label <- as.integer(as.factor(tree_16s$tip.label))
+reference_tree <- read.tree(args$reference_tree)
+if (inherits(reference_tree, "multiPhylo")) reference_tree <- reference_tree[[1]]
+print(reference_tree)
+
+# Prune trees to include only common tips
+common_tips <- intersect(reference_tree$tip.label, tree$tip.label)
+print(length(common_tips))
+
+tree <- drop.tip(tree, setdiff(tree$tip.label, common_tips))
+reference_tree <- drop.tip(reference_tree, setdiff(reference_tree$tip.label, common_tips))
 
 # Rotate tree to match the reference
 tree <- rotateConstr(tree, reference_tree$tip.label)
@@ -30,7 +38,6 @@ VisualizeMatching(
   SharedPhylogeneticInfo, 
   reference_tree, 
   tree, 
-  Plot = TreeDistPlot, 
   matchZeros = FALSE
 )
 
@@ -38,6 +45,10 @@ VisualizeMatching(
 shared_info <- SharedPhylogeneticInfo(reference_tree, tree)
 reference_info <- SplitwiseInfo(reference_tree)
 tree_info <- SplitwiseInfo(tree)
+
+cat("Reference information:", reference_info, "\n")
+cat("Calculated tree information:", tree_info, "\n")
+cat("Shared information:", shared_info, "\n")
 
 cat("Shared information (normalized by reference):", shared_info / reference_info, "\n")
 cat("Shared information (normalized by tree):", shared_info / tree_info, "\n")
