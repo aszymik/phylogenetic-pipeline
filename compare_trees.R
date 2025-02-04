@@ -11,7 +11,7 @@ library(argparse)
 # Set up argument parser
 parser <- ArgumentParser(description = "Compare trees using shared and unique phylogenetic information.")
 parser$add_argument("--input_tree", required = TRUE, help = "File path to tree you want to compare with the reference.")
-parser$add_argument("--reference_tree", default = "reference_data/pruned_phylogeny.tre", help = "File path with the reference tree. Default: reference_data/pruned_phylogeny.tre")
+parser$add_argument("--reference_tree", default = "reference_data/timetree.newick", help = "File path with the reference tree. Default: reference_data/pruned_phylogeny.tre")
 args <- parser$parse_args()
 
 # Parse input trees
