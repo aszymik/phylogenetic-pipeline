@@ -29,94 +29,93 @@ paralogs_trees_file = f'{paralogs_consensus_dir}/all_trees.treefile'
 # Fetch protein sequences from NCBI database
 rule fetch_sequences:
     output:
-        directory=sequences_dir
+        directory(sequences_dir)
     params:
         bioproject_id=bioproject_id
-    script:
-        'fetch_sequences.py'
+    shell:
+        'python3 fetch_sequences.py --bioproject_id {params.bioproject_id} --output_dir {output}'
 
 # Merge all sequences into one file
 rule merge_into_one_file:
     input:
-        directory=sequences_dir
+        sequences_dir
     output:
-        fasta=proteomes_fasta
-    script:
-        'merge_into_one_file.py'
+        proteomes_fasta
+    shell:
+        'python3 merge_into_one_file.py --input_dir {input} --output_file {output}'
 
 # Cluster sequences using MMSeqs2
 rule run_clustering:
     input:
-        fasta=proteomes_fasta
+        proteomes_fasta
     output:
-        directory=mmseqs_results_dir
+        directory(mmseqs_results_dir)
     shell:
-        """
-        bash clustering.sh {input.fasta} {output.directory}
-        """
+        'bash clustering.sh {input} {output}'
 
 # Correct clustering to contain orthologs cluster
 rule correct_clustering:
     input:
-        seq_dir=sequences_dir,
-        cluster_tsv=mmseqs_cluster_tsv
+        sequences_dir
     output:
-        directory=clusters_dir
-    script:
-        'correct_clustering.py'
+        directory(clusters_dir)
+    params:
+        cluster_tsv=mmseqs_cluster_tsv
+    shell:
+        'python3 correct_clustering.py {input} {output} {params.cluster_tsv}'
 
 # Run MSA
 rule run_alignment:
     input:
-        directory=clusters_dir
+        clusters_dir
     output:
-        directory=alignment_dir
-    script:
-        'alignments.py'
+        directory(alignment_dir)
+    shell:
+        'python3 alignments.py {input} {output}'
 
 # Infer NJ trees
 rule infer_trees:
     input:
-        directory=alignment_dir
+        alignment_dir
     output:
-        directory=trees_dir
+        directory(trees_dir)
     shell:
         """
         Rscript infer_trees.R \
-            --alignment_dir {input.directory} \
-            --output_dir {output.directory}
+            --alignment_dir {input} \
+            --output_dir {output}
         """
 
 # Generate consensus
 rule consensus_tree:
     input:
-        directory=trees_dir
+        trees_dir
     output:
-        directory=consensus_dir
-    script:
-        'consensus_tree.py'
+        directory(consensus_dir)
+    shell:
+        'python3 consensus_tree.py {input} {output}'
 
 # Generate supertree
 rule supertree:
     input:
-        treefile=all_trees_file
-    script:
-        'supertree.py'
+        all_trees_file
+    shell:
+        'python3 supertree.py {input}'
 
 # Infer NJ trees with bootstrap
 rule infer_bootstrap_trees:
     input:
-        directory=alignment_dir
+        alignment_dir
     output:
-        directory=bootstrap_trees_dir
+        directory(bootstrap_trees_dir)
     params:
-        bootstrap_replicates=bootstrap_replicates
+        bootstrap_replicates=bootstrap_replicates,
         bootstrap_threshold=bootstrap_threshold
     shell:
         """
         Rscript infer_trees.R \
-            --alignment_dir {input.directory} \
-            --output_dir {output.directory} \
+            --alignment_dir {input} \
+            --output_dir {output} \
             --use_bootstrap \
             --bootstrap_replicates {params.bootstrap_replicates} \
             --bootstrap_threshold {params.bootstrap_threshold}
@@ -125,59 +124,60 @@ rule infer_bootstrap_trees:
 # Generate consensus and supertree for bootstrapped trees
 rule consensus_tree_bootstrap:
     input:
-        directory=bootstrap_trees_dir
+        bootstrap_trees_dir
     output:
-        directory=bootstrap_consensus_dir
-    script:
-        'consensus_tree.py'
+        directory(bootstrap_consensus_dir)
+    shell:
+        'python3 consensus_tree.py {input} {output}'
 
 rule supertree_bootstrap:
     input:
-        treefile=bootstrap_trees_file
-    script:
-        'supertree.py'
+        bootstrap_trees_file
+    shell:
+        'python3 supertree.py {input}'
 
 
 # Try another version of clustering correction, keeping paralogs
 rule clustering_with_paralogs:
     input:
-        seq_dir=sequences_dir,
-        cluster_tsv=mmseqs_cluster_tsv
+        sequences_dir
     output:
-        directory=clusters_paralogs_dir
-    script:
-        'correct_clustering.py'
+        directory(clusters_paralogs_dir)
+    params:
+        cluster_tsv=mmseqs_cluster_tsv
+    shell:
+        'python3 correct_clustering.py {input} {output} {params.cluster_tsv}'
 
 rule run_alignment_paralogs:
     input:
-        directory=clusters_paralogs_dir
+        clusters_paralogs_dir
     output:
-        directory=paralogs_alignment_dir
-    script:
-        'alignments.py'
+        directory(paralogs_alignment_dir)
+    shell:
+        'python3 alignments.py {input} {output}'
 
 rule infer_trees_paralogs:
     input:
-        directory=paralogs_alignment_dir
+        paralogs_alignment_dir
     output:
-        directory=paralogs_trees_dir
+        directory(paralogs_trees_dir)
     shell:
         """
         Rscript infer_trees.R \
-            --alignment_dir {input.directory} \
-            --output_dir {output.directory}
+            --alignment_dir {input} \
+            --output_dir {output}
         """
 
 rule consensus_tree_paralogs:
     input:
-        directory=paralogs_trees_dir
+        paralogs_trees_dir
     output:
-        directory=paralogs_consensus_dir
-    script:
-        'consensus_tree.py'
+        directory(paralogs_consensus_dir)
+    shell:
+        'python3 consensus_tree.py {input} {output}'
 
 rule supertree_paralogs:
     input:
-        treefile=paralogs_trees_file
-    script:
-        'supertree.py'
+        paralogs_trees_file
+    shell:
+        'python3 supertree.py {input}'
