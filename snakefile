@@ -145,25 +145,28 @@ rule consensus_tree_bootstrap:
     output:
         directory(bootstrap_consensus_dir)
     shell:
-        'python3 consensus_tree.py {input} {output}'
+        'python3 consensus_tree.py --trees_dir {input} --output_dir {output}'
 
 rule supertree_bootstrap:
     input:
         bootstrap_trees_file
     shell:
-        'python3 supertree.py {input}'
+        'python3 supertree.py --trees_file {input}'
 
 
 # Try another version of clustering correction, keeping paralogs
 rule clustering_with_paralogs:
     input:
-        sequences_dir
+        [sequences_dir, mmseqs_cluster_tsv]
     output:
         directory(clusters_paralogs_dir)
-    params:
-        cluster_tsv=mmseqs_cluster_tsv
     shell:
-        'python3 correct_clustering.py {input} {output} {params.cluster_tsv}'
+        """
+        python3 correct_clustering.py \
+        --input_seq_dir {input[0]} \
+        --output_dir {output} \
+        --cluster_tsv {input[1]}
+        """
 
 rule run_alignment_paralogs:
     input:
@@ -171,7 +174,7 @@ rule run_alignment_paralogs:
     output:
         directory(paralogs_alignment_dir)
     shell:
-        'python3 alignments.py {input} {output}'
+        'python3 alignments.py --input_dir {input} --output_dir {output}'
 
 rule infer_trees_paralogs:
     input:
@@ -191,10 +194,10 @@ rule consensus_tree_paralogs:
     output:
         directory(paralogs_consensus_dir)
     shell:
-        'python3 consensus_tree.py {input} {output}'
+        'python3 consensus_tree.py --trees_dir {input} --output_dir {output}'
 
 rule supertree_paralogs:
     input:
         paralogs_trees_file
     shell:
-        'python3 supertree.py {input}'
+        'python3 supertree.py --trees_file {input}'
