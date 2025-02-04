@@ -17,6 +17,7 @@ args <- parser$parse_args()
 # Parse input trees
 tree <- read.tree(args$input_tree)
 if (inherits(tree, "multiPhylo")) tree <- tree[[1]]  # if there is a list of trees, select the first one
+tree <- root(tree, outgroup="Zaprionus_bogoriensis", resolve.root=TRUE)
 print(tree)
 
 reference_tree <- read.tree(args$reference_tree)
