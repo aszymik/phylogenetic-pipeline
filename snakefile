@@ -18,7 +18,7 @@ paralogs_consensus_dir = 'consensus_paralogs'
 
 # Parameters used
 bootstrap_replicates=100
-bootstrap_threshold=70
+bootstrap_threshold=60
 
 # Default extensions from scripts
 mmseqs_cluster_tsv = f'{mmseqs_results_dir}/mmseqs_cluster.tsv'
@@ -119,6 +119,7 @@ rule supertree:
     shell:
         'python3 supertree.py --trees_file {input}'
 
+
 # Infer NJ trees with bootstrap
 rule infer_bootstrap_trees:
     input:
@@ -166,6 +167,7 @@ rule clustering_with_paralogs:
         --input_seq_dir {input[0]} \
         --output_dir {output} \
         --cluster_tsv {input[1]}
+        --remove_paralogs False
         """
 
 rule run_alignment_paralogs:

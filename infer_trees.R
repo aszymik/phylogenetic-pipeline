@@ -35,7 +35,6 @@ run_nj_tree <- function(file_path, output_path) {
 
 # Generate NJ tree with bootstrapping
 run_nj_with_bootstrap <- function(file_path, output_path, replicates, threshold) {
-    # Load alignment data
     phy_data <- read.phyDat(file_path, format = "fasta", type = "AA")
     dist_matrix <- dist.ml(phy_data, model = "JTT")
     
@@ -52,14 +51,18 @@ run_nj_with_bootstrap <- function(file_path, output_path, replicates, threshold)
     # Calculate bootstrap support values
     bootstrap_values <- prop.clades(nj_tree, bootstrap_trees)
     
-    # Set node labels with bootstrap values
+    # Check if any bootstrap value is below the threshold
+    if (any(bootstrap_values < threshold, na.rm = TRUE)) {
+        cat("Skipping tree generation for", file_path, "due to low bootstrap support.\n")
+        return()  # Do not save the tree
+    }
+    
+    # Assign bootstrap values to node labels
     nj_tree$node.label <- as.numeric(bootstrap_values)
     
-    # Remove weakly supported nodes by setting their labels to NA
-    nj_tree$node.label[!is.na(nj_tree$node.label) & nj_tree$node.label < threshold] <- NA
-    
-    # Save the tree
+    # Save the tree if all bootstrap values meet the threshold
     write.tree(nj_tree, file = output_path)
+    cat("NJ Tree with bootstrapping generated for:", file_path, "\n")
 }
 
 
