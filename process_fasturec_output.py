@@ -1,5 +1,6 @@
 import argparse
 
+
 def process_fasturec_output(input_file, output_file):
     """
     Processes a FASTUREC output file by removing the leading number and whitespace,
@@ -10,6 +11,8 @@ def process_fasturec_output(input_file, output_file):
         output_file (str): Path to the output file to save the processed data.
     """
     try:
+
+
         with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
             for line in infile:
                 # Remove leading number and whitespace
@@ -26,13 +29,9 @@ def process_fasturec_output(input_file, output_file):
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(description='Processes a FASTUREC output file by removing the leading number and whitespace, and appending a semicolon at the end of the line.')
-    # parser.add_argument('--fasturec_tree', required=True, help='Path to a file containing Fasturec output tree you want to process.')
-    # parser.add_argument('--output_tree', required=True, help='Desired output file path.')
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Processes a FASTUREC output file by removing the leading number and whitespace, and appending a semicolon at the end of the line.')
+    parser.add_argument('--fasturec_tree', required=True, help='Path to a file containing Fasturec output tree you want to process.')
+    parser.add_argument('--output_tree', required=True, help='Desired output file path.')
+    args = parser.parse_args()
 
-    # process_fasturec_output(args.fasturec_tree, args.output_tree)
-
-    fasturec_paralogs = 'fu.all_trees.treefile_cleaned.nwk.62930.1439377.txt'
-    output = 'consensus/supertree.nwk'
-    process_fasturec_output(fasturec_paralogs, output)
+    process_fasturec_output(args.fasturec_tree, args.output_tree)
